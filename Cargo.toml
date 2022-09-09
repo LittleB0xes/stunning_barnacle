@@ -1,5 +1,5 @@
 [package]
-name = "sdl_life"
+name = "stunning_barnacle"
 version = "0.1.0"
 edition = "2021"
 
@@ -15,7 +15,7 @@ rand = "0.8.5"
 [dependencies.sdl2]
 version = "0.35"
 default-features = false
-features = ["image"]
+features = ["ttf","image"]
 
 [profile.dev]
 opt-level=3

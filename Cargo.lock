@@ -97,7 +97,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdl_life"
+name = "stunning_barnacle"
 version = "0.1.0"
 dependencies = [
  "rand",
