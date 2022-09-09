@@ -37,7 +37,43 @@ impl Cell {
     }
 }
 
-fn interaction(particles: &mut Vec<Cell>) {
+struct Rules {
+    rules: [[f32; 4]; 4],
+    friction: f32,
+}
+
+impl Rules {
+    fn new() -> Self {
+        Self {
+            rules: [
+                [-0.15, 0.14, 0.11, 0.0],
+                [-0.12, -0.03, 0.3, 0.0],
+                [0.12, 0.12, 0.3, 0.0],
+                [-0.15, 0.15, 0.0, 0.0]],
+            friction: 0.0,
+        }
+    }
+
+    fn get_force(&self, color_a: Color, color_b: Color) -> f32 {
+        let i: usize = match color_a {
+            Color::YELLOW   => 0,
+            Color::BLUE     => 1,
+            Color::RED      => 2,
+            Color::WHITE    => 3,
+            _               => 0,
+        };
+        let j: usize = match color_b {
+            Color::YELLOW   => 0,
+            Color::BLUE     => 1,
+            Color::RED      => 2,
+            Color::WHITE    => 3,
+            _               => 0,
+        };
+        self.rules[i][j]
+    }
+}
+
+fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
     let part_number = particles.len();
     for i in 0..part_number {
         let mut ax = 0.0;
@@ -48,7 +84,7 @@ fn interaction(particles: &mut Vec<Cell>) {
             //let dist = dx*dx + dy*dy;
             let dist = f32::sqrt(dx*dx + dy*dy);
             if dist > 0.0 && dist < 80.0 {
-                let rules_factor = rules(particles[i].color, particles[j].color);
+                let rules_factor = rules.get_force(particles[i].color, particles[j].color);
                 let force = rules_factor / dist;
                 ax += force * dx;
                 ay += force * dy;
@@ -72,26 +108,7 @@ fn interaction(particles: &mut Vec<Cell>) {
     }
 }
 
-fn rules(color_a: Color, color_b: Color) -> f32 {
-    match (color_a, color_b) {
-        (Color::YELLOW, Color::YELLOW) => -0.15,
-        (Color::YELLOW, Color::BLUE) => 0.14,
-        (Color::YELLOW, Color::RED) => 0.11,
-        (Color::YELLOW, Color::WHITE) => 0.0,
-        (Color::BLUE, Color::BLUE) => -0.03,
-        (Color::BLUE, Color::YELLOW) => -0.12,
-        (Color::BLUE, Color::RED) => 0.12,
-        (Color::RED, Color::RED) => 0.3,
-        (Color::RED, Color::YELLOW) => 0.12,
-        (Color::RED, Color::BLUE) => 0.12,
-        (Color::WHITE, Color::YELLOW) => -0.05,
-        (Color::WHITE, Color::BLUE) => 0.05,
-
-        _ => 0.0,
-    }
-}
-
-fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<WindowContext>, font: &Font, text: &str, color: Color) -> Result<(), String>{
+fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<WindowContext>, font: &Font,x: i32, y: i32, text: &str, color: Color) -> Result<(), String>{
     let text_size = font.size_of(text).unwrap();
 
     let surface = font
@@ -108,8 +125,8 @@ fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<Windo
     //let TextureQuery { width, height, .. } = texture.query();
 
     let target = Rect::new(
-    WIDTH as i32 + 10 ,
-    0,
+    x,
+    y,
     text_size.0,
     text_size.1,
     );
@@ -145,22 +162,20 @@ fn main() -> Result<(), String> {
     let texture_creator = canvas.texture_creator();
 
 
-    
-
     let mut event_pump = sdl_context.event_pump()?;
 
     let mut rng = rand::thread_rng();
 
     // Spawn some randomized particles
     let mut particles: Vec<Cell> = Vec::new();
-    for _i in 0..1500 {
+    for _i in 0..2500 {
         let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
         let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
 
         particles.push(Cell::new(x as f32, y as f32, Color::YELLOW));
     }
 
-    for _i in 0..1500 {
+    for _i in 0..2500 {
         let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
         let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
 
@@ -179,12 +194,13 @@ fn main() -> Result<(), String> {
 
         particles.push(Cell::new(x as f32, y as f32, Color::WHITE));
     }
+    let rules = Rules::new();
     // Main Loop
     'running: loop {
         let begining = Instant::now();
 
         // Updating
-        interaction(&mut particles);
+        interaction(&mut particles, &rules);
 
         // Rendering
         canvas.clear();
@@ -210,9 +226,7 @@ fn main() -> Result<(), String> {
         }
         let end = Instant::now();
         let tps = format!("TPF: {}",  (end - begining).as_millis());
-        
-
-        render_text(&mut canvas, &texture_creator, &font, &tps, Color::WHITE);
+        render_text(&mut canvas, &texture_creator, &font, WIDTH as i32 + 10, 0,&tps, Color::WHITE);
         canvas.present();
         //::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
