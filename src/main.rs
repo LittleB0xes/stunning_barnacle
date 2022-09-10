@@ -1,4 +1,3 @@
-use sdl2::mouse::MouseButton;
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::rect::Rect;
@@ -10,61 +9,25 @@ use rand::prelude::*;
 use sdl2::ttf::Font;
 use sdl2::video::WindowContext;
 
-use std::collections::HashSet;
-use std::time::{Instant, Duration};
+//use std::time::{Instant, Duration};
 use std::f32;
 
 
 use ui::UI;
 mod ui;
 
+use cell::Cell;
+mod cell;
+
 const WIDTH: f32 = 500.0;
 const UI_WIDTH: u32 = 200;
 const HEIGHT: f32 = 500.0;
 
 
-pub enum EventType {
-    YellowYellow,
-    YellowBlue,
-    YellowRed,
-    YellowWhite,
-    BlueYellow,
-    BlueBlue,
-    BlueRed,
-    BlueWhite,
-    RedYellow,
-    RedBlue,
-    RedRed,
-    RedWhite,
-    WhiteYellow,
-    WhiteBlue,
-    WhiteRed,
-    WhiteWhite,
-}
-
-struct Cell {
-    x: f32,
-    y: f32,
-    vx: f32,
-    vy: f32,
-    color: Color,
-}
-
-impl Cell {
-    fn new(x: f32, y: f32, color: Color) -> Self {
-        Self {
-            x,
-            y,
-            vx: 0.0,
-            vy: 0.0,
-            color
-        }
-    }
-}
 
 struct Rules {
     rules: [[f32; 4]; 4],
-    friction: f32,
+    //friction: f32,
 }
 
 impl Rules {
@@ -77,7 +40,7 @@ impl Rules {
                 [0.0, 0.0, 0.0, 0.0],
             ],
                
-            friction: 0.0,
+            //friction: 0.0,
         }
     }
     fn set_force(&mut self, color_a: Color, color_b: Color, value: f32) {
@@ -184,6 +147,7 @@ fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<Windo
     Ok(())
 }
 
+
 fn main() -> Result<(), String> {
 
     let sdl_context = sdl2::init()?;
@@ -191,7 +155,7 @@ fn main() -> Result<(), String> {
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
 
     // load font
-    let font = ttf_context.load_font("./assets/Hack-Regular.ttf", 16)?;
+    let font = ttf_context.load_font("./assets/Hack-Regular.ttf", 12)?;
 
     let video_subsystem = sdl_context.video()?;
     let _image_context = sdl2::image::init(InitFlag::PNG)?;
@@ -232,14 +196,14 @@ fn main() -> Result<(), String> {
 
     // Spawn some randomized particles
     let mut particles: Vec<Cell> = Vec::new();
-    for _i in 0..2500 {
+    for _i in 0..1500 {
         let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
         let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
 
         particles.push(Cell::new(x as f32, y as f32, Color::YELLOW));
     }
 
-    for _i in 0..2500 {
+    for _i in 0..1500 {
         let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
         let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
 
@@ -264,7 +228,7 @@ fn main() -> Result<(), String> {
 
     // Main Loop
     'running: loop {
-        let begining = Instant::now();
+        //let begining = Instant::now();
 
         // Updating rules
         for slider in ui.h_sliders.iter() {
@@ -277,7 +241,6 @@ fn main() -> Result<(), String> {
         // Check ui
         let mut mouse_x: i32 = -1;
         let mut mouse_y: i32 = -1;
-        let mut button_state: bool = false;
 
         // Rendering
         canvas.clear();
@@ -298,27 +261,43 @@ fn main() -> Result<(), String> {
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
                     break 'running;
                 },
-                Event::MouseButtonDown { mouse_btn, x, y, .. } => {
+                Event::KeyDown { keycode: Some(Keycode::A), .. } => {
+                    for slider in ui.h_sliders.iter_mut() {
+                        slider.cursor_position = 0.375 + 0.25 * rng.gen::<f32>();
+                    }
+                },
+                Event::KeyDown { keycode: Some(Keycode::Z), .. } => {
+                    for part in particles.iter_mut() {
+                        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
+                        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+                        part.x = x as f32;
+                        part.y = y as f32;
+
+                    }
+                },
+                Event::MouseButtonDown {x, y, .. } => {
                     mouse_x = x;
                     mouse_y = y;
-                    button_state = true;
                 }
                 _ => {}
             }
         }
         
         // UI update
-        ui.update(mouse_x, mouse_y, button_state);
+        ui.update(mouse_x, mouse_y);
 
 
 
         // Time per frame calculation
-        let end = Instant::now();
-        let tps = format!("TPF: {}",  (end - begining).as_millis());
-        render_text(&mut canvas, &texture_creator, &font, WIDTH as i32 + 10, 0,&tps, Color::WHITE);
+        //let end = Instant::now();
+        //let tps = format!("TPF: {}",  (end - begining).as_millis());
+        //render_text(&mut canvas, &texture_creator, &font, WIDTH as i32 + 10, 0,&tps, Color::WHITE);
+
+        render_text(&mut canvas, &texture_creator, &font, WIDTH as i32 + 10, HEIGHT as i32 - 20,"'A' to randomize rules", Color::WHITE)?;
+        render_text(&mut canvas, &texture_creator, &font, WIDTH as i32 + 10, HEIGHT as i32 - 40,"'Z' to reset", Color::WHITE)?;
         
         // Slider rendering
-        ui.render(&mut canvas);
+        ui.render(&mut canvas)?;
         
         canvas.present();
         //::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));

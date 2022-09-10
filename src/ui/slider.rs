@@ -2,16 +2,12 @@ use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2::render::WindowCanvas;
 
-use crate::EventType;
-
-
 pub struct HSlider{
    pub rect: Rect,
    pub cursor_position: f32,
    bg_color: Color,
    active_color: Color,
    pub linked_event: (Color, Color),
-   clicked: bool
 
 }
 
@@ -24,20 +20,21 @@ impl HSlider {
             bg_color,
             active_color: color,
             linked_event,
-            clicked: false
         }
     }
-    pub fn render(&self, canvas: &mut WindowCanvas) {
+    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
         let active_width = self.rect.width() as f32 * self.cursor_position;
         let active_rect = Rect::new(self.rect.x, self.rect.y, active_width as u32, self.rect.height());
 
         // First slider background
         canvas.set_draw_color(self.bg_color);
-        canvas.fill_rect(self.rect);
+        canvas.fill_rect(self.rect)?;
 
         // ... then active rectangle
         canvas.set_draw_color(self.active_color); //self.active_color);
-        canvas.fill_rect(active_rect);
+        canvas.fill_rect(active_rect)?;
+
+        Ok(())
     }
 
     pub fn click_on(&mut self, click_position: i32) {

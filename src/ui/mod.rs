@@ -1,9 +1,6 @@
-use sdl2::mouse::MouseButton;
 use sdl2::pixels::Color;
 use sdl2::render::WindowCanvas;
 use sdl2::rect::Rect;
-
-use crate::EventType;
 
 use self::slider::HSlider;
 
@@ -27,7 +24,7 @@ impl UI {
         self.h_sliders.push(HSlider::new(x, y, width, height, color, back_color, linked_event));
     }
 
-    pub fn update(&mut self, mouse_x: i32, mouse_y: i32, button_state: bool) {
+    pub fn update(&mut self, mouse_x: i32, mouse_y: i32) {
 
         for slider in self.h_sliders.iter_mut() {
             if point_inside_rect(mouse_x, mouse_y, slider.rect) {
@@ -36,10 +33,11 @@ impl UI {
         }
     }
 
-    pub fn render(&mut self, canvas: &mut WindowCanvas) {
+    pub fn render(&mut self, canvas: &mut WindowCanvas) -> Result<(), String> {
         for slider in self.h_sliders.iter() {
-            slider.render(canvas);
+            slider.render(canvas)?;
         }
+        Ok(())
     }
 }
 
