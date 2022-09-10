@@ -19,102 +19,16 @@ mod ui;
 use cell::Cell;
 mod cell;
 
+use interaction::*;
+use interaction::Rules;
+mod interaction;
+
 const WIDTH: f32 = 500.0;
 const UI_WIDTH: u32 = 200;
 const HEIGHT: f32 = 500.0;
 
 
 
-struct Rules {
-    rules: [[f32; 4]; 4],
-    //friction: f32,
-}
-
-impl Rules {
-    fn new() -> Self {
-        Self {
-            rules: [
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-            ],
-               
-            //friction: 0.0,
-        }
-    }
-    fn set_force(&mut self, color_a: Color, color_b: Color, value: f32) {
-        let i: usize = match color_a {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        let j: usize = match color_b {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        self.rules[i][j] = value;
-
-    }
-
-    fn get_force(&self, color_a: Color, color_b: Color) -> f32 {
-        let i: usize = match color_a {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        let j: usize = match color_b {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        self.rules[i][j]
-    }
-}
-
-fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
-    let part_number = particles.len();
-    for i in 0..part_number {
-        let mut ax = 0.0;
-        let mut ay = 0.0;
-        for j in 0..part_number {
-            let dx = particles[i].x - particles[j].x;
-            let dy = particles[i].y - particles[j].y;
-            //let dist = dx*dx + dy*dy;
-            let dist = f32::sqrt(dx*dx + dy*dy);
-            if dist > 0.0 && dist < 80.0 {
-                let rules_factor = rules.get_force(particles[i].color, particles[j].color);
-                let force = rules_factor / dist;
-                ax += force * dx;
-                ay += force * dy;
-            }            
-        }
-        particles[i].vx = (particles[i].vx + ax) * 0.25;
-        particles[i].vy = (particles[i].vy + ay) * 0.25;
-        let next_x = particles[i].x + particles[i].vx;
-        let next_y = particles[i].y + particles[i].vy;
-
-        if next_x < 0.0 || next_x > WIDTH {
-            particles[i].vx *= -1.0;
-        }
-
-        if next_y < 0.0|| next_y > HEIGHT{
-            particles[i].vy *= -1.0;
-        }
-
-        particles[i].x += particles[i].vx * 0.8; 
-        particles[i].y += particles[i].vy * 0.8; 
-    }
-}
 
 fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<WindowContext>, font: &Font,x: i32, y: i32, text: &str, color: Color) -> Result<(), String>{
     let text_size = font.size_of(text).unwrap();
@@ -139,9 +53,6 @@ fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<Windo
     text_size.1,
     );
 
-
-   
-
     canvas.copy(&texture, None, Some(target))?;
 
     Ok(())
@@ -160,7 +71,7 @@ fn main() -> Result<(), String> {
     let video_subsystem = sdl_context.video()?;
     let _image_context = sdl2::image::init(InitFlag::PNG)?;
 
-    let window = video_subsystem.window("Cell Life", UI_WIDTH + WIDTH as u32, HEIGHT as u32)
+    let window = video_subsystem.window("Stunning Barnacle", UI_WIDTH + WIDTH as u32, HEIGHT as u32)
         .position_centered()
         .allow_highdpi()
         .resizable()
