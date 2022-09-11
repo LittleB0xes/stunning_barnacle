@@ -1,4 +1,4 @@
-use macroquad::{prelude::*, rand::{rand, gen_range}};
+use macroquad::prelude::*;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{HEIGHT, WIDTH};
