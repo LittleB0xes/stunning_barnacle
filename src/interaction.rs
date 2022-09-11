@@ -77,7 +77,7 @@ impl Rules {
 
     }
 
-    fn get_force(&self, color_a: Color, color_b: Color) -> f32 {
+    pub fn get_force(&self, color_a: Color, color_b: Color) -> f32 {
         let i: usize = match color_a {
             Color::YELLOW   => 0,
             Color::BLUE     => 1,
@@ -94,4 +94,5 @@ impl Rules {
         };
         self.rules[i][j]
     }
+
 }

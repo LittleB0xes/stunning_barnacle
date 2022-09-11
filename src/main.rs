@@ -24,7 +24,7 @@ use interaction::Rules;
 mod interaction;
 
 const WIDTH: f32 = 500.0;
-const UI_WIDTH: u32 = 200;
+const UI_WIDTH: u32 = 300;
 const HEIGHT: f32 = 500.0;
 
 
@@ -44,7 +44,6 @@ fn render_text(canvas: &mut WindowCanvas, texture_creator: &TextureCreator<Windo
         .map_err(|e| e.to_string())?;
 
 
-    //let TextureQuery { width, height, .. } = texture.query();
 
     let target = Rect::new(
     x,
@@ -81,14 +80,16 @@ fn main() -> Result<(), String> {
     
     let mut canvas = window.into_canvas().build().expect("Could not create a canvas");
     canvas.set_logical_size(UI_WIDTH + WIDTH as u32, HEIGHT as u32).expect("Logical Size Error");
+
+    // Blendmode is important to use transparency
     canvas.set_blend_mode(BlendMode::Blend);
 
     let texture_creator = canvas.texture_creator();
-
-
     let mut event_pump = sdl_context.event_pump()?;
 
 
+    // Random init
+    let mut rng = rand::thread_rng();
 
     let mut ui = UI::init();
     let mut rules = Rules::new();
@@ -103,36 +104,9 @@ fn main() -> Result<(), String> {
 
     }
     
-    let mut rng = rand::thread_rng();
 
     // Spawn some randomized particles
-    let mut particles: Vec<Cell> = Vec::new();
-    for _i in 0..1500 {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
-
-        particles.push(Cell::new(x as f32, y as f32, Color::YELLOW));
-    }
-
-    for _i in 0..1500 {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
-
-        particles.push(Cell::new(x as f32, y as f32, Color::BLUE));
-    }
-    
-    for _i in 0..1500 {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
-
-        particles.push(Cell::new(x as f32, y as f32, Color::RED));
-    }
-    for _i in 0..1500 {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
-
-        particles.push(Cell::new(x as f32, y as f32, Color::WHITE));
-    }
+    let mut particles: Vec<Cell> = cell::cell_incubator(1000, 1000, 1000, 1000);
     
 
 
@@ -147,6 +121,8 @@ fn main() -> Result<(), String> {
             rules.set_force(slider.linked_event.0, slider.linked_event.1, value);
         }
         // Updating interaction
+        // It acually use a brute force method. A futur step
+        // is to use quadtree
         interaction(&mut particles, &rules);
 
         // Check ui
@@ -163,7 +139,6 @@ fn main() -> Result<(), String> {
             //canvas.set_draw_color(Color::YELLOW);
             canvas.set_draw_color(part.color);
             canvas.fill_rect(destination_rect)?;
-
         }
 
         for event in event_pump.poll_iter() {
@@ -174,17 +149,11 @@ fn main() -> Result<(), String> {
                 },
                 Event::KeyDown { keycode: Some(Keycode::A), .. } => {
                     for slider in ui.h_sliders.iter_mut() {
-                        slider.cursor_position = 0.375 + 0.25 * rng.gen::<f32>();
+                        slider.cursor_position = ((0.4 + 0.2 * rng.gen::<f32>()) * 100.0).round() / 100.0;
                     }
                 },
                 Event::KeyDown { keycode: Some(Keycode::Z), .. } => {
-                    for part in particles.iter_mut() {
-                        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-                        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
-                        part.x = x as f32;
-                        part.y = y as f32;
-
-                    }
+                    particles = cell::cell_incubator(1000, 1000, 1000, 1000);
                 },
                 Event::MouseButtonDown {x, y, .. } => {
                     mouse_x = x;
@@ -209,6 +178,14 @@ fn main() -> Result<(), String> {
         
         // Slider rendering
         ui.render(&mut canvas)?;
+
+        // print some useful data
+        for slider in ui.h_sliders.iter() {
+            let value = rules.get_force(slider.linked_event.0, slider.linked_event.1);
+            let x = slider.rect.x() + slider.rect.width() as i32 + 10;
+            let y = slider.rect.y();
+            render_text(&mut canvas, &texture_creator, &font, x, y, &format!("{:.2}", value), Color::WHITE)?;
+        }
         
         canvas.present();
         //::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));

@@ -1,4 +1,9 @@
 use sdl2::pixels::Color;
+
+use rand::prelude::*;
+
+use super::{HEIGHT, WIDTH};
+
 pub struct Cell {
     pub x: f32,
     pub y: f32,
@@ -17,4 +22,40 @@ impl Cell {
             color
         }
     }
+}
+
+pub fn cell_incubator(cell_a: u32, cell_b: u32, cell_c: u32, cell_d: u32) -> Vec<Cell> {
+
+    let mut rng = rand::thread_rng();
+    
+    let mut particles: Vec<Cell> = Vec::new();
+    for _i in 0..cell_a {
+        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
+        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+
+        particles.push(Cell::new(x as f32, y as f32, Color::YELLOW));
+    }
+
+    for _i in 0..cell_b {
+        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
+        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+
+        particles.push(Cell::new(x as f32, y as f32, Color::BLUE));
+    }
+    
+    for _i in 0..cell_c {
+        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
+        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+
+        particles.push(Cell::new(x as f32, y as f32, Color::RED));
+    }
+    for _i in 0..cell_d {
+        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
+        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+
+        particles.push(Cell::new(x as f32, y as f32, Color::WHITE));
+    }
+
+    particles
+
 }
