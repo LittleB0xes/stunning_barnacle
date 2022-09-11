@@ -7,6 +7,8 @@ It's a work in progress, and just for fun...
 
 For this project, i use [Rust-SDL2](https://github.com/Rust-SDL2/rust-sdl2) for rendering
 
+Actually, it uses a naive approach for collision checking. A future step will be to use quadtrees to make this more efficient.
+
 ## How to use it
 There are currently 4 types of particles and the possibility of adjusting the forces of attraction/repulsion between each of them by clicking on either side of the colored rectangle.
 
