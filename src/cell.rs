@@ -1,6 +1,5 @@
-use sdl2::pixels::Color;
-
-use rand::prelude::*;
+use macroquad::{prelude::*, rand::{rand, gen_range}};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{HEIGHT, WIDTH};
 
@@ -25,35 +24,39 @@ impl Cell {
 }
 
 pub fn cell_incubator(cell_a: u32, cell_b: u32, cell_c: u32, cell_d: u32) -> Vec<Cell> {
+    rand::srand(SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64);
 
-    let mut rng = rand::thread_rng();
     
     let mut particles: Vec<Cell> = Vec::new();
     for _i in 0..cell_a {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+        let x: u32 = rand::gen_range(0, WIDTH as u32);
+        let y: u32 = rand::gen_range(0, HEIGHT as u32);
 
-        particles.push(Cell::new(x as f32, y as f32, Color::YELLOW));
+
+        particles.push(Cell::new(x as f32, y as f32, YELLOW));
     }
 
     for _i in 0..cell_b {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+        let x: u32 = rand::gen_range(0, WIDTH as u32);
+        let y: u32 = rand::gen_range(0, HEIGHT as u32);
 
-        particles.push(Cell::new(x as f32, y as f32, Color::BLUE));
+        particles.push(Cell::new(x as f32, y as f32, BLUE));
     }
     
     for _i in 0..cell_c {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+        let x: u32 = rand::gen_range(0, WIDTH as u32);
+        let y: u32 = rand::gen_range(0, HEIGHT as u32);
 
-        particles.push(Cell::new(x as f32, y as f32, Color::RED));
+        particles.push(Cell::new(x as f32, y as f32, RED));
     }
     for _i in 0..cell_d {
-        let x: u32 = rng.gen::<u32>() % (WIDTH as u32);
-        let y: u32 = rng.gen::<u32>() % (HEIGHT as u32);
+        let x: u32 = rand::gen_range(0, WIDTH as u32);
+        let y: u32 = rand::gen_range(0, HEIGHT as u32);
 
-        particles.push(Cell::new(x as f32, y as f32, Color::WHITE));
+        particles.push(Cell::new(x as f32, y as f32, WHITE));
     }
 
     particles

@@ -1,7 +1,4 @@
-use sdl2::pixels::Color;
-use sdl2::render::WindowCanvas;
-use sdl2::rect::Rect;
-
+use macroquad::prelude::*;
 use self::slider::HSlider;
 
 pub mod slider;
@@ -20,11 +17,11 @@ impl UI {
         }
 
     }
-    pub fn add_hslider(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color, back_color: Color, linked_event: (Color, Color)) {
+    pub fn add_hslider(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color, back_color: Color, linked_event: (Color, Color)) {
         self.h_sliders.push(HSlider::new(x, y, width, height, color, back_color, linked_event));
     }
 
-    pub fn update(&mut self, mouse_x: i32, mouse_y: i32) {
+    pub fn update(&mut self, mouse_x: f32, mouse_y: f32) {
 
         for slider in self.h_sliders.iter_mut() {
             if point_inside_rect(mouse_x, mouse_y, slider.rect) {
@@ -33,14 +30,13 @@ impl UI {
         }
     }
 
-    pub fn render(&mut self, canvas: &mut WindowCanvas) -> Result<(), String> {
+    pub fn render(&mut self){
         for slider in self.h_sliders.iter() {
-            slider.render(canvas)?;
+            slider.render();
         }
-        Ok(())
     }
 }
 
-fn point_inside_rect(x: i32, y: i32, rect: Rect) -> bool {
-    x >= rect.x && x <= rect.x + rect.x + rect.width() as i32 && y >= rect.y && y <= rect.y + rect.height() as i32
+fn point_inside_rect(x: f32, y: f32, rect: Rect) -> bool {
+    x >= rect.x && x <= rect.x + rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h
 }

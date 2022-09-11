@@ -1,6 +1,4 @@
-use sdl2::rect::Rect;
-use sdl2::pixels::Color;
-use sdl2::render::WindowCanvas;
+use macroquad::prelude::*;
 
 pub struct HSlider{
    pub rect: Rect,
@@ -12,8 +10,8 @@ pub struct HSlider{
 }
 
 impl HSlider {
-    pub fn new(x: i32, y: i32, width: u32, height:u32, color: Color, back_color: Color, linked_event: (Color, Color)) -> HSlider {
-        let bg_color = Color::RGBA(back_color.r, back_color.g, back_color.b, 125);
+    pub fn new(x: f32, y: f32, width: f32, height:f32, color: Color, back_color: Color, linked_event: (Color, Color)) -> HSlider {
+        let bg_color = Color::new(back_color.r, back_color.g, back_color.b, 0.5);
         HSlider {
             rect: Rect::new(x, y, width, height),
             cursor_position: 0.5,
@@ -22,23 +20,19 @@ impl HSlider {
             linked_event,
         }
     }
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
-        let active_width = self.rect.width() as f32 * self.cursor_position;
-        let active_rect = Rect::new(self.rect.x, self.rect.y, active_width as u32, self.rect.height());
+    pub fn render(&self) {
+        let active_width = self.rect.w * self.cursor_position;
+        let active_rect = Rect::new(self.rect.x, self.rect.y, active_width, self.rect.h);
 
         // First slider background
-        canvas.set_draw_color(self.bg_color);
-        canvas.fill_rect(self.rect)?;
+        draw_rectangle(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.bg_color);
 
         // ... then active rectangle
-        canvas.set_draw_color(self.active_color); //self.active_color);
-        canvas.fill_rect(active_rect)?;
-
-        Ok(())
+        draw_rectangle(active_rect.x, active_rect.y, active_rect.w, active_rect.h, self.active_color);
     }
 
-    pub fn click_on(&mut self, click_position: i32) {
-        let delta_position = (self.rect.width() as f32 * self.cursor_position) as i32;
+    pub fn click_on(&mut self, click_position: f32) {
+        let delta_position = self.rect.w *  self.cursor_position;
         if click_position > self.rect.x + delta_position {
             self.click_up()
         } else {

@@ -1,4 +1,4 @@
-use sdl2::pixels::Color;
+use macroquad::prelude::*;
 
 use crate::cell::Cell;
 
@@ -31,7 +31,7 @@ pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
             particles[i].vx *= -1.0;
         }
 
-        if next_y < 0.0|| next_y > HEIGHT{
+        if next_y < 0.0|| next_y > HEIGHT {
             particles[i].vy *= -1.0;
         }
 
@@ -59,40 +59,31 @@ impl Rules {
         }
     }
     pub fn set_force(&mut self, color_a: Color, color_b: Color, value: f32) {
-        let i: usize = match color_a {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        let j: usize = match color_b {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        self.rules[i][j] = value;
+        
+        self.rules[value_of(color_a)][value_of(color_b)] = value;
 
     }
 
     pub fn get_force(&self, color_a: Color, color_b: Color) -> f32 {
-        let i: usize = match color_a {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        let j: usize = match color_b {
-            Color::YELLOW   => 0,
-            Color::BLUE     => 1,
-            Color::RED      => 2,
-            Color::WHITE    => 3,
-            _               => 0,
-        };
-        self.rules[i][j]
+        self.rules[value_of(color_a)][value_of(color_b)]
     }
+
+
+}
+
+fn value_of(color: Color) -> usize {
+    if color.eq(&YELLOW) {
+        0
+    }
+    else if color.eq(&BLUE) {
+        1
+    }
+    else if color.eq(&RED) {
+        2
+    }
+    else if color.eq(&WHITE) {
+        3
+    }
+    else { 0 }
 
 }
