@@ -18,8 +18,8 @@ The `Z` key is used to generate a new starting position of the particles.
 
 ## Some result
 
-https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_3.gif
+![](https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_3.gif)
 
-https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_1.gif
+![](https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_1.gif)
 
-https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_2.gif
+![](https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_2.gif)
