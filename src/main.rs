@@ -172,6 +172,8 @@ async fn main() {
 
 
         // print some useful data
+
+        // slider index (ie rules value)
         for slider in ui.h_sliders.iter() {
             let slider_event = match slider.linked_event {
                 EventType::ColorInteraction(x,y) => (x,y),
@@ -183,6 +185,14 @@ async fn main() {
             let y = slider.rect.y + slider.rect.h * 0.8;
             
             draw_text( &format!("{:.2}", value), x, y, 16.0, WHITE);
+        }
+
+        // quantity of each particles
+        for i in 0..4 {
+            let value = particles_amount[i];
+            let x = ui.buttons[2*i].rect.x;
+            let y = ui.buttons[2*i].rect.y + 32.0;
+            draw_text( &format!("{}", value), x, y, 16.0, WHITE);
         }
         
         //draw_text( &format!("FPS: {}", get_fps()), WIDTH + 10.0, 15.0, 16.0, WHITE);
