@@ -15,3 +15,11 @@ There are currently 4 types of particles and the possibility of adjusting the fo
 The `A` key allows you to randomize the interaction rules.
 
 The `Z` key is used to generate a new starting position of the particles.
+
+## Some result
+
+https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_3.gif
+
+https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_1.gif
+
+https://github.com/LittleB0xes/stunning_barnacle/blob/main/screenshots/gif_2.gif
