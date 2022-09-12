@@ -1,16 +1,18 @@
 use macroquad::prelude::*;
 
+use super::EventType;
+
 pub struct HSlider{
    pub rect: Rect,
    pub cursor_position: f32,
    bg_color: Color,
    active_color: Color,
-   pub linked_event: (Color, Color),
+   pub linked_event: EventType, //(Color, Color),
 
 }
 
 impl HSlider {
-    pub fn new(x: f32, y: f32, width: f32, height:f32, color: Color, back_color: Color, linked_event: (Color, Color)) -> HSlider {
+    pub fn new(x: f32, y: f32, width: f32, height:f32, color: Color, back_color: Color, linked_event: EventType) -> HSlider {
         let bg_color = Color::new(back_color.r, back_color.g, back_color.b, 0.5);
         HSlider {
             rect: Rect::new(x, y, width, height),

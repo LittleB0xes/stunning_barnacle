@@ -5,6 +5,12 @@ pub mod slider;
 
 // button and other stuff
 
+pub enum EventType {
+    ColorInteraction(Color, Color),
+    ColorIncrease(Color, i32),
+    ColorDecrease(Color, i32),
+}
+
 pub struct UI {
     pub h_sliders: Vec<HSlider>,
 }
@@ -17,7 +23,7 @@ impl UI {
         }
 
     }
-    pub fn add_hslider(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color, back_color: Color, linked_event: (Color, Color)) {
+    pub fn add_hslider(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color, back_color: Color, linked_event: EventType) {
         self.h_sliders.push(HSlider::new(x, y, width, height, color, back_color, linked_event));
     }
 

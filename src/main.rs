@@ -7,7 +7,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use std::f32;
 
 
-use ui::UI;
+use ui::{UI, EventType};
 mod ui;
 
 use cell::Cell;
@@ -38,7 +38,15 @@ async fn main() {
     let mut index = 0;
     for part_a in color_list.iter() {
         for part_b in color_list.iter() {
-            ui.add_hslider(WIDTH + 10.0, 32.0 + (index * 20) as f32, 150.0, 16.0, *part_a, *part_b, (*part_a, *part_b));
+            ui.add_hslider(
+                WIDTH + 10.0,
+                32.0 + (index * 20) as f32,
+                150.0,
+                16.0,
+                *part_a,
+                *part_b,
+                EventType::ColorInteraction(*part_a, *part_b)
+            );
             index += 1;
         }
 
@@ -62,8 +70,13 @@ async fn main() {
         }
         // Updating rules
         for slider in ui.h_sliders.iter() {
+            let slider_event = match slider.linked_event {
+                EventType::ColorInteraction(x,y) => (x,y),
+                _ => (WHITE, WHITE),
+
+            };
             let value = 0.5 - slider.cursor_position;
-            rules.set_force(slider.linked_event.0, slider.linked_event.1, value);
+            rules.set_force(slider_event.0,  slider_event.1, value);
         }
         // Updating interaction
         // It acually use a brute force method. A futur step
@@ -83,14 +96,19 @@ async fn main() {
 
         // print some useful data
         for slider in ui.h_sliders.iter() {
-            let value = rules.get_force(slider.linked_event.0, slider.linked_event.1);
+            let slider_event = match slider.linked_event {
+                EventType::ColorInteraction(x,y) => (x,y),
+                _ => (WHITE, WHITE),
+
+            };
+            let value = rules.get_force(slider_event.0, slider_event.1);
             let x = slider.rect.x + slider.rect.w + 10.0;
             let y = slider.rect.y + slider.rect.h * 0.8;
             
             draw_text( &format!("{:.2}", value), x, y, 16.0, WHITE);
         }
         
-        draw_text( &format!("FPS: {}", get_fps()), WIDTH + 10.0, 15.0, 16.0, WHITE);
+        //draw_text( &format!("FPS: {}", get_fps()), WIDTH + 10.0, 15.0, 16.0, WHITE);
         draw_text( "'D' to randomize positions", WIDTH + 10.0, HEIGHT - 48.0, 16.0, WHITE);
         draw_text( "'S' to randomize rules", WIDTH + 10.0, HEIGHT - 24.0, 16.0, WHITE);
         next_frame().await

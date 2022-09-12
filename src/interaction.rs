@@ -22,8 +22,8 @@ pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
                 ay += force * dy;
             }            
         }
-        particles[i].vx = (particles[i].vx + ax) * 0.25;
-        particles[i].vy = (particles[i].vy + ay) * 0.25;
+        particles[i].vx = (particles[i].vx + ax) * 0.25; //0.01;
+        particles[i].vy = (particles[i].vy + ay) * 0.25; //0.01;
         let next_x = particles[i].x + particles[i].vx;
         let next_y = particles[i].y + particles[i].vy;
 
