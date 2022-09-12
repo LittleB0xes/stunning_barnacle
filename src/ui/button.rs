@@ -39,6 +39,6 @@ impl Button {
         );
 
         // Render the label
-        draw_text(&self.label, self.rect.x, self.rect.y + self.rect.h, 32.0, self.label_color);
+        draw_text(&self.label, self.rect.x, self.rect.y + self.rect.h, 36.0, self.label_color);
     }
 }

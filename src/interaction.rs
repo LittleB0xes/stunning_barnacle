@@ -71,7 +71,7 @@ impl Rules {
 
 }
 
-fn value_of(color: Color) -> usize {
+pub fn value_of(color: Color) -> usize {
     if color.eq(&YELLOW) {
         0
     }

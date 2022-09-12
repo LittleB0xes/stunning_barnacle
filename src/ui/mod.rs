@@ -15,6 +15,7 @@ pub enum EventType {
 }
 
 pub struct UI {
+    pub update_flag: bool,
     pub h_sliders: Vec<HSlider>,
     pub buttons: Vec<Button>,
 }
@@ -22,6 +23,7 @@ pub struct UI {
 impl UI {
     pub fn init() -> Self {
         Self {
+            update_flag: false,
             h_sliders: Vec::new(),
             buttons: Vec::new(),
         }
@@ -50,6 +52,17 @@ impl UI {
             }
         }
     }
+
+    pub fn need_update(&mut self) {
+        self.update_flag = true;
+    }
+
+    pub fn update_done(&mut self) {
+        self.update_flag = false;
+
+    }
+
+
 
     pub fn render(&mut self){
         for slider in self.h_sliders.iter() {
