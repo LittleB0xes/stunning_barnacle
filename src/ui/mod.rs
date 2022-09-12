@@ -47,22 +47,11 @@ impl UI {
         for button in self.buttons.iter_mut() {
             button.clicked = false;
             if point_inside_rect(mouse_x, mouse_y, button.rect) {
-                button.clicked = true
+                button.clicked = true;
 
             }
         }
     }
-
-    pub fn need_update(&mut self) {
-        self.update_flag = true;
-    }
-
-    pub fn update_done(&mut self) {
-        self.update_flag = false;
-
-    }
-
-
 
     pub fn render(&mut self){
         for slider in self.h_sliders.iter() {
@@ -76,5 +65,5 @@ impl UI {
 }
 
 fn point_inside_rect(x: f32, y: f32, rect: Rect) -> bool {
-    x >= rect.x && x <= rect.x + rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h
+    x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h
 }

@@ -39,6 +39,12 @@ impl Button {
         );
 
         // Render the label
-        draw_text(&self.label, self.rect.x, self.rect.y + self.rect.h, 36.0, self.label_color);
+        if self.clicked {
+            draw_text(&self.label, self.rect.x, self.rect.y + self.rect.h, 36.0, self.label_color);
+
+        } else {
+
+        draw_text(&self.label, self.rect.x, self.rect.y + self.rect.h, 36.0, PINK); 
+        }
     }
 }

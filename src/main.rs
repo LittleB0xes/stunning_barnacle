@@ -79,28 +79,39 @@ async fn main() {
 
 
     // Spawn some randomized particles
-    let n_blue = 1000;
-    let n_red = 1000;
-    let n_yellow = 1000;
-    let n_white = 1000;
-    let mut particles: Vec<Cell> = cell::cell_incubator(n_yellow, n_blue, n_red, n_white);
+    // Particles amount Yellow/blue/red/white
+    let mut particles_amount: [i32; 4] = [0, 0, 0, 0];
+    let mut particles: Vec<Cell> = cell::cell_incubator(
+        particles_amount[0],
+        particles_amount[1],
+        particles_amount[2],
+        particles_amount[3],
+    );
 
     loop {
         // Keyboard entries
+        let mut ui_flag = false;
         if is_key_pressed(KeyCode::S) {
             for slider in ui.h_sliders.iter_mut() {
                 slider.cursor_position = gen_range(0.4, 0.6);
+                ui_flag = true;
             }
         }
         else if is_key_pressed(KeyCode::D) {
-            particles = cell::cell_incubator(n_yellow, n_blue, n_red, n_white);
+            particles = cell::cell_incubator(
+                particles_amount[0],
+                particles_amount[1],
+                particles_amount[2],
+                particles_amount[3],
+            );
         }
         if is_mouse_button_pressed(MouseButton::Left) {
             ui.update(mouse_position().0, mouse_position().1);
-            ui.need_update();
+            ui_flag = true;
         }
+
         // Updating rules if necessary
-        if ui.update_flag {
+        if ui_flag {
             for slider in ui.h_sliders.iter() {
                 let slider_event = match slider.linked_event {
                     EventType::ColorInteraction(x,y) => (x,y),
@@ -113,22 +124,42 @@ async fn main() {
 
             // Update particule amount
             for button in ui.buttons.iter() {
-                let button_event = match button.linked_event {
-                    EventType::ColorIncrease(color, amount) => {},
-                    EventType::ColorDecrease(color, amount) => {},
-                    _ => {}
-                };
-                
-            }
-            ui.update_done();
+                if button.clicked {
+                    match button.linked_event {
+                        EventType::ColorIncrease(color, amount) => {
+                            if particles_amount[value_of(color)] < 2000 {
+                                particles_amount[value_of(color)] += amount;
 
+                                particles = cell::cell_incubator(
+                                    particles_amount[0],
+                                    particles_amount[1],
+                                    particles_amount[2],
+                                    particles_amount[3],
+                                );
+
+                            }
+                        },
+                        EventType::ColorDecrease(color, amount) => {
+                            if particles_amount[value_of(color)] > 0 {
+                                particles_amount[value_of(color)] -= amount;
+                                particles = cell::cell_incubator(
+                                    particles_amount[0],
+                                    particles_amount[1],
+                                    particles_amount[2],
+                                    particles_amount[3],
+                                );
+                            }
+                        },
+                        _ => {}
+                    };
+
+                }
+            }
         }
 
         // Updating interaction
         // It acually use a brute force method. A futur step
         // is to use quadtree
-
-
         interaction(&mut particles,&rules);
         clear_background(BLACK);
         

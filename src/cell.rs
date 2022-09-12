@@ -23,7 +23,7 @@ impl Cell {
     }
 }
 
-pub fn cell_incubator(cell_a: u32, cell_b: u32, cell_c: u32, cell_d: u32) -> Vec<Cell> {
+pub fn cell_incubator(cell_a: i32, cell_b: i32, cell_c: i32, cell_d: i32) -> Vec<Cell> {
     rand::srand(SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
