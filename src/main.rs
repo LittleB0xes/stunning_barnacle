@@ -35,6 +35,8 @@ async fn main() {
     let mut rules = Rules::new();
 
     let mut ui = UI::init();
+    
+    // Add all the color slider
     let mut index = 0;
     for part_a in color_list.iter() {
         for part_b in color_list.iter() {
@@ -49,8 +51,18 @@ async fn main() {
             );
             index += 1;
         }
-
     }
+
+    // add buttons
+    ui.add_button(
+        WIDTH + 10.0,
+        330.0 + 32.0,
+        16.0, 16.0,
+        String::from("+"),
+        BLACK, WHITE,
+        EventType::ColorIncrease(WHITE, 1)
+    );
+
 
     // Spawn some randomized particles
     let mut particles: Vec<Cell> = cell::cell_incubator(1000, 1000, 1000, 1000);
