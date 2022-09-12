@@ -80,7 +80,7 @@ async fn main() {
 
     // Spawn some randomized particles
     // Particles amount Yellow/blue/red/white
-    let mut particles_amount: [i32; 4] = [0, 0, 0, 0];
+    let mut particles_amount: [i32; 4] = [500, 500, 500, 500];
     let mut particles: Vec<Cell> = cell::cell_incubator(
         particles_amount[0],
         particles_amount[1],
@@ -164,7 +164,8 @@ async fn main() {
         clear_background(BLACK);
         
         for part in particles.iter() {
-            draw_circle(part.x, part.y, 1.5, part.color);
+            //draw_circle(part.x, part.y, 1.5, part.color);
+            draw_circle_lines(part.x, part.y, 3.0, 2.0, part.color);
             //draw_rectangle(part.x, part.y, 3.0, 3.0, part.color);
         }
 
