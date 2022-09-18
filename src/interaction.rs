@@ -16,7 +16,7 @@ pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules, dt: f32, m: f32) {
             //let dist = dx*dx + dy*dy;
             let dist = f32::sqrt(dx*dx + dy*dy);
             if dist > 0.0 && dist < 80.0 {
-                let rules_factor = 50.0 * rules.get_force(particles[i].color, particles[j].color);
+                let rules_factor = rules.get_force(particles[i].color, particles[j].color);
                 let force = rules_factor / dist;
                 ax += force * dx * m;
                 ay += force * dy * m;

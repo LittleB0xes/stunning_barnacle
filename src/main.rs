@@ -34,8 +34,8 @@ async fn main() {
     let color_list = [YELLOW, BLUE, RED, WHITE];
     let mut rules = Rules::new();
 
-    let mut dt: f32 = 0.01;
-    let mut m: f32 = 1.0;
+    let mut dt: f32 = 0.25;
+    let mut m: f32 = 0.8;
 
     let mut ui = UI::init();
     
@@ -65,17 +65,17 @@ async fn main() {
             WIDTH + 10.0 + 18.0 * index,
             330.0 + 32.0,
             16.0, 16.0,
-            String::from("+"),
+            String::from("-"),
             BLACK, *part,
-            EventType::ColorVariation(*part, 100)
+            EventType::ColorVariation(*part, -100)
         );
         ui.add_button(
             WIDTH + 10.0 + 18.0 * (index + 1.0),
             330.0 + 32.0,
             16.0, 16.0,
-            String::from("-"),
+            String::from("+"),
             BLACK, *part,
-            EventType::ColorVariation(*part, -100)
+            EventType::ColorVariation(*part, 100)
         );
         index += 4.0;
 
@@ -90,7 +90,7 @@ async fn main() {
         16.0,
         String::from("-"),
         BLACK, BEIGE,
-        EventType::DeltaVariation(-0.002),
+        EventType::DeltaVariation(-0.05),
     );
     ui.add_button(
         WIDTH + 10.0 + 18.0,
@@ -108,7 +108,7 @@ async fn main() {
         16.0,
         String::from("+"),
         BLACK, BEIGE,
-        EventType::DeltaVariation(0.002),
+        EventType::DeltaVariation(0.05),
     );
 
     // Weight variation
@@ -120,7 +120,7 @@ async fn main() {
         String::from("-"),
         BLACK,
         LIME,
-        EventType::WeightVariation(-0.01),
+        EventType::WeightVariation(-0.1),
     );
     ui.add_button(
         WIDTH + 74.0 + 18.0,
@@ -130,7 +130,7 @@ async fn main() {
         String::from("+"),
         BLACK,
         LIME,
-        EventType::WeightVariation(0.01),
+        EventType::WeightVariation(0.1),
     );
 
 
