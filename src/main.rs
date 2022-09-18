@@ -34,6 +34,9 @@ async fn main() {
     let color_list = [YELLOW, BLUE, RED, WHITE];
     let mut rules = Rules::new();
 
+    let mut dt: f32 = 0.01;
+    let mut m: f32 = 1.0;
+
     let mut ui = UI::init();
     
     // Add all the color slider
@@ -54,6 +57,7 @@ async fn main() {
     }
 
     // add buttons
+    // First, for the amount of each particle...
     index = 0.0;
     for part in color_list.iter() {
         // Increase button
@@ -63,7 +67,7 @@ async fn main() {
             16.0, 16.0,
             String::from("+"),
             BLACK, *part,
-            EventType::ColorIncrease(*part, 100)
+            EventType::ColorVariation(*part, 100)
         );
         ui.add_button(
             WIDTH + 10.0 + 18.0 * (index + 1.0),
@@ -71,11 +75,63 @@ async fn main() {
             16.0, 16.0,
             String::from("-"),
             BLACK, *part,
-            EventType::ColorDecrease(*part, 100)
+            EventType::ColorVariation(*part, -100)
         );
         index += 4.0;
 
     }
+
+    // And for some other values
+    // - delta_t 
+    ui.add_button(
+        WIDTH + 10.0,
+        400.0,
+        16.0,
+        16.0,
+        String::from("-"),
+        BLACK, BEIGE,
+        EventType::DeltaVariation(-0.002),
+    );
+    ui.add_button(
+        WIDTH + 10.0 + 18.0,
+        400.0,
+        16.0,
+        16.0,
+        String::from("="),
+        BLACK, BEIGE,
+        EventType::DeltaReset,
+    );
+    ui.add_button(
+        WIDTH + 10.0 + 36.0,
+        400.0,
+        16.0,
+        16.0,
+        String::from("+"),
+        BLACK, BEIGE,
+        EventType::DeltaVariation(0.002),
+    );
+
+    // Weight variation
+    ui.add_button(
+        WIDTH + 74.0,
+        400.0,
+        16.0,
+        16.0,
+        String::from("-"),
+        BLACK,
+        LIME,
+        EventType::WeightVariation(-0.01),
+    );
+    ui.add_button(
+        WIDTH + 74.0 + 18.0,
+        400.0,
+        16.0,
+        16.0,
+        String::from("+"),
+        BLACK,
+        LIME,
+        EventType::WeightVariation(0.01),
+    );
 
 
     // Spawn some randomized particles
@@ -126,10 +182,14 @@ async fn main() {
             for button in ui.buttons.iter() {
                 if button.clicked {
                     match button.linked_event {
-                        EventType::ColorIncrease(color, amount) => {
-                            if particles_amount[value_of(color)] < 2000 {
+                        EventType::ColorVariation(color, amount) => {
+                            //if particles_amount[value_of(color)] <= 2000 && particles_amount[value_of(color)] >= 0 {
                                 particles_amount[value_of(color)] += amount;
 
+                                if particles_amount[value_of(color)] > 2000 {particles_amount[value_of(color)] = 2000};
+                                if particles_amount[value_of(color)] < 0 {particles_amount[value_of(color)] = 0};
+
+
                                 particles = cell::cell_incubator(
                                     particles_amount[0],
                                     particles_amount[1],
@@ -137,19 +197,19 @@ async fn main() {
                                     particles_amount[3],
                                 );
 
-                            }
+                            //}
                         },
-                        EventType::ColorDecrease(color, amount) => {
-                            if particles_amount[value_of(color)] > 0 {
-                                particles_amount[value_of(color)] -= amount;
-                                particles = cell::cell_incubator(
-                                    particles_amount[0],
-                                    particles_amount[1],
-                                    particles_amount[2],
-                                    particles_amount[3],
-                                );
-                            }
+                        EventType::DeltaVariation(value) => {
+                            dt += value;
+                            if dt < 0.0 {dt = 0.0};
+                            if dt > 1.0 {dt = 1.0};
                         },
+                        EventType::DeltaReset => {
+                            dt = 0.0;
+                        },
+                        EventType::WeightVariation(value) => {
+                            m += value;
+                        }
                         _ => {}
                     };
 
@@ -160,7 +220,7 @@ async fn main() {
         // Updating interaction
         // It acually use a brute force method. A futur step
         // is to use quadtree
-        interaction(&mut particles,&rules);
+        interaction(&mut particles,&rules, dt, m);
         clear_background(BLACK);
         
         for part in particles.iter() {
@@ -195,6 +255,11 @@ async fn main() {
             let y = ui.buttons[2*i].rect.y + 32.0;
             draw_text( &format!("{}", value), x, y, 16.0, WHITE);
         }
+
+        // delta value
+            draw_text( &format!("{:.3}", dt), WIDTH + 10.0, 432.0, 16.0, WHITE);
+            draw_text( &format!("{:.3}", m), WIDTH + 72.0, 432.0, 16.0, WHITE);
+
         
         //draw_text( &format!("FPS: {}", get_fps()), WIDTH + 10.0, 15.0, 16.0, WHITE);
         draw_text( "'D' to randomize positions", WIDTH + 10.0, HEIGHT - 48.0, 16.0, WHITE);

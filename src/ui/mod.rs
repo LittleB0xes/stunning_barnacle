@@ -10,8 +10,11 @@ pub mod button;
 
 pub enum EventType {
     ColorInteraction(Color, Color),
-    ColorIncrease(Color, i32),
-    ColorDecrease(Color, i32),
+    ColorVariation(Color, i32),
+    DeltaVariation(f32),
+    WeightVariation(f32),
+    DeltaReset,
+
 }
 
 pub struct UI {

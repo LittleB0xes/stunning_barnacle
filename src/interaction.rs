@@ -5,7 +5,7 @@ use crate::cell::Cell;
 use super::{HEIGHT, WIDTH};
 
 
-pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
+pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules, dt: f32, m: f32) {
     let part_number = particles.len();
     for i in 0..part_number {
         let mut ax = 0.0;
@@ -16,14 +16,16 @@ pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
             //let dist = dx*dx + dy*dy;
             let dist = f32::sqrt(dx*dx + dy*dy);
             if dist > 0.0 && dist < 80.0 {
-                let rules_factor = 30.0 * rules.get_force(particles[i].color, particles[j].color);
+                let rules_factor = 50.0 * rules.get_force(particles[i].color, particles[j].color);
                 let force = rules_factor / dist;
-                ax += force * dx;
-                ay += force * dy;
+                ax += force * dx * m;
+                ay += force * dy * m;
             }            
         }
-        particles[i].vx = (particles[i].vx + ax) * 0.035; //0.01;
-        particles[i].vy = (particles[i].vy + ay) * 0.035;
+        //particles[i].vx = particles[i].vx + ax * m * dt; //0.01;
+        //particles[i].vy = particles[i].vy + ay * m * dt;
+        particles[i].vx = (particles[i].vx + ax) * dt; //0.01;
+        particles[i].vy = (particles[i].vy + ay) * dt;
         let next_x = particles[i].x + particles[i].vx;
         let next_y = particles[i].y + particles[i].vy;
 
@@ -35,8 +37,8 @@ pub fn interaction(particles: &mut Vec<Cell>, rules: &Rules) {
             particles[i].vy *= -1.0;
         }
 
-        particles[i].x += particles[i].vx; // * 0.8; 
-        particles[i].y += particles[i].vy; // * 0.8; 
+        particles[i].x += particles[i].vx; 
+        particles[i].y += particles[i].vy; 
     }
 }
 
